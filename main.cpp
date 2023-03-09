@@ -2,14 +2,6 @@
 
 #include <QApplication>
 
-/*int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
-}*/
-
 class MyWidget : public QMainWindow, private Ui::MainWindow
 {
 public:
@@ -18,10 +10,7 @@ public:
     {
         setupUi(this);
 
-        // QLineEdit 위젯에서 숫자 입력 시, QPushButton을 클릭하는 것과 동일한 동작을 수행하도록 합니다.
         connect(menu_lineEdit, &QLineEdit::returnPressed, menu_pushButton, &QPushButton::click);
-
-        // QPushButton 위젯을 클릭하면, 숫자에 해당하는 함수를 호출합니다.
         connect(menu_pushButton, &QPushButton::clicked, this, &MyWidget::callFunction);
     }
 
@@ -29,6 +18,7 @@ private slots:
     void callFunction()
     {
         int number = menu_lineEdit->text().toInt();
+        menu_lineEdit->clear();
         switch (number)
         {
         case 1:
@@ -60,45 +50,132 @@ private slots:
             break;
 
         default:
-            // 입력한 숫자가 올바르지 않은 경우, 경고창을 표시합니다.
-            QMessageBox::warning(this, "Error", "Invalid number!");
+            QMessageBox::warning(this, "Error", "유효하지 않은 명령번호입니다!");
             break;
         }
     }
 
+    QString m_fileName;
+    QString m_fileContent;
+
     void FileLoad()
     {
-        qDebug() << "FileLoad";
+        QString fileName = QFileDialog::getOpenFileName(this, "FileLoad", QDir::homePath());
+
+        // .txt 파일이 아닌 경우
+        QFileInfo fileInfo(fileName);
+        QString extension = fileInfo.suffix();
+        if (extension != "txt") {
+            QMessageBox::warning(this, "FileLoad", ".txt 확장자 파일이 아닙니다!");
+            return;
+        }
+
+        if (!fileName.isEmpty())
+        {
+            QFile file(fileName);
+
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                m_fileName = fileName;
+                m_fileContent = file.readAll();
+                file.close();
+                QMessageBox::information(this, "FileLoad", "파일 불러오기 성공!");
+            }
+            else
+            {
+                QMessageBox::warning(this, "FileLoad", "파일 불러오기 실패!");
+            }
+        }
     }
 
     void FilePrint()
     {
-        qDebug() << "FilePrint";
+        txt_textBrowser->setPlainText(m_fileContent);
     }
 
     void FileUpdate()
     {
-        qDebug() << "FileUpdate";
+        QString oldWord = QInputDialog::getText(this, tr("FileUpdate"), tr("바꿀 문자열을 입력하세요 :"));
+        QString newWord = QInputDialog::getText(this, tr("FileUpdate"), tr("새 문자열을 입력하세요 :"));
+
+        if (!oldWord.isEmpty() && !newWord.isEmpty())
+        {
+            m_fileContent.replace(oldWord, newWord);
+            txt_textBrowser->setText(m_fileContent);
+        }
     }
 
     void FileDelele()
     {
-        qDebug() << "FileDelele";
+        QString word = QInputDialog::getText(this, tr("FileDelele"), tr("삭제할 문자열을 입력하세요 :"));
+
+        if (!word.isEmpty())
+        {
+            m_fileContent.replace(word, "");
+            txt_textBrowser->setText(m_fileContent);
+        }
     }
 
     void FileFind()
     {
-        qDebug() << "FileFind";
+        FilePrint();
+
+        QString word = QInputDialog::getText(this, tr("FileFind"), tr("검색할 문자열을 입력하세요 :"));
+
+        if (!word.isEmpty())
+        {
+            QTextDocument *document = txt_textBrowser->document();
+            QTextCursor cursor(document);
+            QTextCharFormat format;
+            format.setBackground(Qt::yellow);
+
+            bool found = false;
+            while (!cursor.isNull()) {
+                cursor.clearSelection();
+                cursor = document->find(word, cursor);
+
+                if (!cursor.isNull()) {
+                    found = true;
+                    QTextCursor highlightCursor(document);
+                    highlightCursor.setPosition(cursor.selectionStart());
+                    highlightCursor.setPosition(cursor.selectionEnd(), QTextCursor::KeepAnchor);
+                    highlightCursor.mergeCharFormat(format);
+                    cursor.movePosition(QTextCursor::NextCharacter);
+                }
+            }
+
+            if (!found) {
+                QMessageBox::information(this, tr("FileFind"), tr("입력하신 문자열은 해당 파일에 존재하지 않습니다!"));
+            }
+        }
     }
 
     void FileSave()
     {
-        qDebug() << "FileSave";
+        QString filePath = QFileDialog::getSaveFileName(this, tr("FileSave"), "", tr("Text Files (*.txt)"));
+
+        if (!filePath.isEmpty())
+        {
+            QFile file(filePath);
+
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+            {
+                QTextStream out(&file);
+                out << txt_textBrowser->toPlainText();
+                file.close();
+
+                QMessageBox::information(this, "FileSave", "파일이 성공적으로 저장되었습니다!");
+            }
+            else
+            {
+                QMessageBox::warning(this, "FileSave", "파일 저장에 실패하였습니다!");
+            }
+        }
     }
 
     void Exit()
     {
-        qDebug() << "Exit";
+        QApplication::quit();
     }
 
 };
