@@ -2,7 +2,7 @@
 
 #include <QApplication>
 
-class MyWidget : public QMainWindow, private Ui::MainWindow
+class MyWidget : public QMainWindow, private Ui::FileWorker
 {
 public:
     MyWidget(QWidget *parent = nullptr)
@@ -62,7 +62,6 @@ private slots:
     {
         QString fileName = QFileDialog::getOpenFileName(this, "FileLoad", QDir::homePath());
 
-        // .txt 파일이 아닌 경우
         QFileInfo fileInfo(fileName);
         QString extension = fileInfo.suffix();
         if (extension != "txt") {

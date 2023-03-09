@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>FileWorker</class>
+ <widget class="QMainWindow" name="FileWorker">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -29,12 +29,12 @@
      <rect>
       <x>310</x>
       <y>40</y>
-      <width>80</width>
+      <width>41</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>입력</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="menu_textBrowser">
@@ -68,7 +68,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <rect>
       <x>60</x>
       <y>240</y>
-      <width>256</width>
+      <width>331</width>
       <height>192</height>
      </rect>
     </property>
