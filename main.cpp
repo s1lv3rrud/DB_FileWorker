@@ -46,6 +46,10 @@ private slots:
             break;
 
         case 7:
+            FileInsert();
+            break;
+
+        case 8:
             Exit();
             break;
 
@@ -104,6 +108,17 @@ private slots:
         }
     }
 
+    void FileInsert()
+    {
+        QString newWord = QInputDialog::getText(this, tr("FileUpdate"), tr("추가할 문자열을 입력하세요 :"));
+
+        if (!newWord.isEmpty())
+        {
+            m_fileContent.append("\n" + newWord);
+            txt_textBrowser->setText(m_fileContent);
+        }
+    }
+
     void FileDelele()
     {
         QString word = QInputDialog::getText(this, tr("FileDelele"), tr("삭제할 문자열을 입력하세요 :"));
@@ -117,6 +132,7 @@ private slots:
 
     void FileFind()
     {
+        // 강조 표시 clear
         FilePrint();
 
         QString word = QInputDialog::getText(this, tr("FileFind"), tr("검색할 문자열을 입력하세요 :"));
