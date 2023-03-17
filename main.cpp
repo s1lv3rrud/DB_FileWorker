@@ -4,6 +4,7 @@
 
 class MyWidget : public QMainWindow, private Ui::FileWorker
 {
+    int fileOpenFlag = 0;
 public:
     MyWidget(QWidget *parent = nullptr)
         : QMainWindow(parent)
@@ -22,31 +23,38 @@ private slots:
         switch (number)
         {
         case 1:
+            fileOpenFlag = 1;
             FileLoad();
             break;
 
         case 2:
-            FilePrint();
+            if (fileOpenFlag == 1) FilePrint();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 3:
-            FileUpdate();
+            if (fileOpenFlag == 1) FileUpdate();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 4:
-            FileDelele();
+            if (fileOpenFlag == 1) FileDelele();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 5:
-            FileFind();
+            if (fileOpenFlag == 1) FileFind();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 6:
-            FileSave();
+            if (fileOpenFlag == 1) FileSave();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 7:
-            FileInsert();
+            if (fileOpenFlag == 1) FileInsert();
+            else QMessageBox::warning(this, "FileLoad", "열린 파일이 없습니다!");
             break;
 
         case 8:
@@ -132,7 +140,6 @@ private slots:
 
     void FileFind()
     {
-        // 강조 표시 clear
         FilePrint();
 
         QString word = QInputDialog::getText(this, tr("FileFind"), tr("검색할 문자열을 입력하세요 :"));
